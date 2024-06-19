@@ -251,10 +251,9 @@ void get_read_hash(Read_Hash& read_hash, std::vector<std::string>& Read, std::ve
     }
 
     time_t end = time(NULL);
-   
 
     std::cerr << "read hash finished, get " << read_hash.size() << " reads!"  << "read list finished, get " << read_list.size()
-        << "paired reads!  (elapsed time: " << (end - beg) << " s)" << std::endl;
+        << " paired reads!  (elapsed time: " << (end - beg) << " s)" << std::endl;
 }
 
 void get_kmer_hash(Kmer_Hash& kmer_hash, Read_Hash& read_hash) {
@@ -266,8 +265,6 @@ void get_kmer_hash(Kmer_Hash& kmer_hash, Read_Hash& read_hash) {
     for (it = read_hash.begin(); it != read_hash.end(); ++it) {
         const std::string& sequence = it->first;
         
-       // if (sequence == "")
-       //     continue;
         for (size_t j = 0; j <= sequence.length() - g_kmer_length; ++j) {
             const std::string& kmer = sequence.substr(j, g_kmer_length);
             if (kmer.find("N") != std::string::npos)
@@ -280,15 +277,6 @@ void get_kmer_hash(Kmer_Hash& kmer_hash, Read_Hash& read_hash) {
     if (kmer_hash.empty()) {
         std::cout << "kmer_hash is empty." << std::endl;
     }
-    /*
-    std::string fileName = out_dir + "kmer_hash.txt";
-    std::ofstream outfile(fileName);
-    // std::ofstream outfile("/home/bioinfo/limh/paper/data/SRR1942956/kmer_hash.txt");
-    for (const auto& pair : kmer_hash) {
-        outfile << pair.first << " " << pair.second << std::endl;
-    }
-    outfile.close();
-   //   */
     std::cerr << "Kmer hash finished, get " << kmer_hash.size()
         << " kmer! (elapsed time: " << (end - beg) << " s)" << std::endl;
 }
@@ -346,7 +334,7 @@ void remove_erroneous(Kmer_Hash& kmer_hash, float min_ratio_non_error) {
         int f_dominant_count = 0;
         for (unsigned int i = 0; i < f_candidates.size(); ++i) {
             if (f_candidates[i].second == 1) {
-               // deletion_hash[f_candidates[i].first]++;
+               
                 kmer_hash.erase(f_candidates[i].first);
 
             }
@@ -365,7 +353,7 @@ void remove_erroneous(Kmer_Hash& kmer_hash, float min_ratio_non_error) {
         int r_dominant_count = 0;
         for (unsigned int i = 0; i < r_candidates.size(); ++i) {
             if (r_candidates[i].second == 1) {
-              //  deletion_hash[r_candidates[i].first]++;
+             
                 kmer_hash.erase(r_candidates[i].first);
               
             }
@@ -384,7 +372,7 @@ void remove_erroneous(Kmer_Hash& kmer_hash, float min_ratio_non_error) {
 
     }
     
-    
+   
     time_t end = time(NULL);
     std::cout << "kmer count after errors deletion : " << kmer_hash.size()  
        << " (elapsed time: " << (end - beg) << " s)"  <<std::endl;
@@ -419,7 +407,6 @@ void get_seed_kmer(Kmer_Hash& kmer_hash, std::vector<kmer_occurence_pair_t>& see
         seed_hash.push_back(std::make_pair(it->first,it->second));
     }
     
-   // std::sort(seed_hash.begin(), seed_hash.end(), sortBySecond) ;
     time_t end = time(NULL);
     std::cerr << "get seed kmer finished, get " << seed_hash.size()
         << " seed kmers! (elapsed time: " << (end - beg) << " s)" << std::endl;
@@ -427,7 +414,7 @@ void get_seed_kmer(Kmer_Hash& kmer_hash, std::vector<kmer_occurence_pair_t>& see
 
 
 
-std::string forward_extend_contig(Kmer_Hash& kmer_hash, kmer_int_type_t kmer_val, Kmer_Hash& used_kmers_) {
+std::string forward_extend_kunitig(Kmer_Hash& kmer_hash, kmer_int_type_t kmer_val, Kmer_Hash& used_kmers_) {
 
     kmer_int_type_t intval = kmer_val;
     std::string str = intval_to_kmer(intval, g_kmer_length);
@@ -439,7 +426,7 @@ std::string forward_extend_contig(Kmer_Hash& kmer_hash, kmer_int_type_t kmer_val
 
         std::sort(candidates.begin(), candidates.end(), sortBySecond); //降序
 
-        if (used_kmers_.find(candidates[0].first) != used_kmers_.end()) {  
+        if (used_kmers_.find(candidates[0].first) != used_kmers_.end()) { 
             break;
         }
         kmer_int_type_t candidate = candidates[0].first;
@@ -455,12 +442,12 @@ std::string forward_extend_contig(Kmer_Hash& kmer_hash, kmer_int_type_t kmer_val
     return str;
 }
 
-std::string forward_extend_contig(Kmer_Hash& kmer_hash, std::string contig) {
+std::string forward_extend_kunitig(Kmer_Hash& kmer_hash, std::string kunitig) {
 
-    std::string rkmer = contig.substr(contig.length() - g_kmer_length);
+    std::string rkmer = kunitig.substr(kunitig.length() - g_kmer_length);
     kmer_int_type_t intval = kmer_to_intval(rkmer);
  
-    std::string str = contig;
+    std::string str = kunitig;
     std::vector<kmer_occurence_pair_t> candidates;
   
     while (1) {
@@ -485,7 +472,7 @@ std::string forward_extend_contig(Kmer_Hash& kmer_hash, std::string contig) {
 }
 
 
-std::string reverse_extend_contig(Kmer_Hash& kmer_hash, kmer_int_type_t kmer_val, Kmer_Hash& used_kmers_) {
+std::string reverse_extend_kunitig(Kmer_Hash& kmer_hash, kmer_int_type_t kmer_val, Kmer_Hash& used_kmers_) {
 
     kmer_int_type_t intval = kmer_val;
     std::string str = intval_to_kmer(intval, g_kmer_length);
@@ -510,10 +497,12 @@ std::string reverse_extend_contig(Kmer_Hash& kmer_hash, kmer_int_type_t kmer_val
     }
     return str;
 }
-std::string reverse_extend_contig(Kmer_Hash& kmer_hash, std::string contig) {
-    std::string lkmer = contig.substr(0, g_kmer_length);
+
+
+std::string reverse_extend_kunitig(Kmer_Hash& kmer_hash, std::string kunitig) {
+    std::string lkmer = kunitig.substr(0, g_kmer_length);
     kmer_int_type_t intval = kmer_to_intval(lkmer);
-    std::string str = contig;
+    std::string str = kunitig;
 
     std::vector<kmer_occurence_pair_t> candidates;
     while (true) {
@@ -539,67 +528,11 @@ std::string reverse_extend_contig(Kmer_Hash& kmer_hash, std::string contig) {
 
 
 
-std::string refine_contig(std::string contig, Kmer_Hash& kmer_hash, Kmer_Hash& used_kmers_) {
-    
-    int length = contig.length();
-    if (length < 3 * g_kmer_length)
-        return contig;
-    // reverse
-    std::vector<kmer_occurence_pair_t> candidates;
-    for (int i = 0; i < 2 * g_kmer_length; ++i) {
-        const std::string& kmer = contig.substr(i, g_kmer_length);
-        kmer_int_type_t intval = kmer_to_intval(kmer);
-        get_reverse_candidates(kmer_hash,intval, candidates);
-        if (candidates.size() <= 1)
-            continue;
-        bool hit_point = false;
-        for (size_t j = 0; j < candidates.size(); ++j) {
-            if (used_kmers_.find(intval) == used_kmers_.end()) {
-                hit_point = true;
-                break;
-            }
-        }
-        if (hit_point) {
-            const std::string& sequence = reverse_extend_contig(kmer_hash, intval,used_kmers_);
-            if ((int)sequence.length() > 3 * g_kmer_length) {
-                contig = sequence + contig.substr(i + g_kmer_length);
-                break;
-            }
-        }
-    }
 
-    // forward
-    length = contig.length();
-    for (int i = length - 3 * g_kmer_length; i < length - g_kmer_length; ++i) {
-        const std::string& kmer = contig.substr(i, g_kmer_length);
-        kmer_int_type_t intval = kmer_to_intval(kmer);
-        get_forward_candidates(kmer_hash,intval, candidates);
-        if (candidates.size() <= 1)
-            continue;
-        bool hit_point = false;
-        for (size_t j = 0; j < candidates.size(); ++j) {
-            if (used_kmers_.find(intval) == used_kmers_.end()) {
-                hit_point = true;
-                break;
-            }
-        }
-        if (hit_point) {
-            const std::string& sequence = forward_extend_contig(kmer_hash, intval,used_kmers_);
-            if ((int)sequence.length() > 3 * g_kmer_length) {
-                contig = contig.substr(0, i) + sequence;
-                break;
-            }
-        }
-    }
-
-    return contig;
-}
-
-
-void extend_contigs(Kmer_Hash kmer_hash,  std::vector<std::string>& contigs_list) {
+void extend_kunitigs(Kmer_Hash kmer_hash,  std::vector<std::string>& kunitigs_list) {
 
     time_t beg = time(NULL);
-    std::cerr << "extend_contigs ..." << std::endl;
+    std::cerr << "extend_kunitigs ..." << std::endl;
     
     Kmer_Hash used_kmers_;
     std::vector<kmer_occurence_pair_t>  seed_kmers;
@@ -609,31 +542,23 @@ void extend_contigs(Kmer_Hash kmer_hash,  std::vector<std::string>& contigs_list
 
         if (used_kmers_.find(kmer_val) == used_kmers_.end() ) { 
             used_kmers_.emplace(kmer_val, kmer_hash[kmer_val]);
-            std::string left = reverse_extend_contig(kmer_hash, kmer_val, used_kmers_);
-            std::string right = forward_extend_contig(kmer_hash, kmer_val, used_kmers_);
-            std::string contig = left + right.substr(g_kmer_length);
-           // contig = refine_contig(contig, kmer_hash,used_kmers_);
-            if (contig.length() > 3 * g_kmer_length) {
+            std::string left = reverse_extend_kunitig(kmer_hash, kmer_val, used_kmers_);
+            std::string right = forward_extend_kunitig(kmer_hash, kmer_val, used_kmers_);
+            std::string kunitig = left + right.substr(g_kmer_length);
+           
+            if (kunitig.length() > 3 * g_kmer_length) {
                 ///*
-                left = reverse_extend_contig(kmer_hash, contig);
-                right = forward_extend_contig(kmer_hash,contig);
-                if (right.length() == contig.length())
-                    contig = left;
+                left = reverse_extend_kunitig(kmer_hash, kunitig);
+                right = forward_extend_kunitig(kmer_hash,kunitig);
+                if (right.length() == kunitig.length())
+                    kunitig = left;
                 else
-                    contig = left + right.substr(contig.length());
+                    kunitig = left + right.substr(kunitig.length());
                // */
-                contigs_list.push_back(contig);
+                kunitigs_list.push_back(kunitig);
 
             }
-            /*
-            else {
-                for (int i = 0; i < contig.length(); i++) {
-                    std::string kmer = contig.substr(i, g_kmer_length);
-                    kmer_int_type_t k_value = kmer_to_intval(kmer);
-                    used_kmers_.erase(k_value);
-                }
-            }
-            */
+           
         }
 
     }
@@ -642,32 +567,40 @@ void extend_contigs(Kmer_Hash kmer_hash,  std::vector<std::string>& contigs_list
     time_t end = time(NULL);
   ///*
     int i = 0;
-    std::string fileName = out_dir + "contigs.fasta";
+    std::string fileName = out_dir + "kunitigs.fasta";
     std::ofstream outputFile(fileName);
     
     if (outputFile.is_open()) {
-        for (const auto& pair : contigs_list) {
+        for (const auto& pair : kunitigs_list) {
             outputFile << "> " << i++ << std::endl;
             outputFile << pair << "\n";
         }
     }
     outputFile.close();
 //  */
-    std::cerr << "contigs  finished, get " << contigs_list.size()
-        << " contigs! (elapsed time: " << (end - beg) << " s)" << std::endl;
+    std::cerr << "kunitigs  finished, get " << kunitigs_list.size()
+        << " kunitigs! (elapsed time: " << (end - beg) << " s)" << std::endl;
 }
 
-bool is_similar( const std::string& str1, const std::string& str2) {
+bool is_similar( std::string str1, std::string str2) {
     if (str1.length() == 0 || str2.length() == 0) {
         return false;
     }
+
+    if (str1.length() < str2.length()) {
+        std::string t = str2;
+        str2 = str1;
+        str1 = t;
+    }
+
     int mismatch = 0;
     int kmer_length = g_kmer_length;
+
     std::string first_kmer = str2.substr(0, kmer_length);
     size_t start = str1.find(first_kmer);
     std::string last_kmer = str2.substr(str2.length() - kmer_length);
     size_t end = str1.find(last_kmer);
-   //   std::cout << "569" << std::endl;
+  
 
     if (start == std::string::npos && end == std::string::npos) {
         kmer_length = g_kmer_length - 4;
@@ -681,7 +614,7 @@ bool is_similar( const std::string& str1, const std::string& str2) {
        
     if (start + kmer_length == str1.length() || end == 0)
         return true;
-    //   std::cout << "738" << std::endl;
+   
     if (start != std::string::npos) {
         const std::string& str3 = str1.substr(start + kmer_length);
         const std::string& str4 = str2.substr(kmer_length);
@@ -698,7 +631,7 @@ bool is_similar( const std::string& str1, const std::string& str2) {
             return false;
         }
     }
-    //  std::cout << "754" << std::endl;
+    
     if (end != std::string::npos) {
         const std::string& str3 = str1.substr(0, end);
         const std::string& str4 = str2.substr(0, str2.length() - kmer_length);
@@ -743,14 +676,12 @@ float get_str_coverage(std::string str, Kmer_Hash& kmer_hash,bool flag) {
     }
    // */
     int sum = 0;
-    // if (first > last)
-    //     break;
+    
     for (; first <= last; ++first) {
         sum += cov_v[first];
     }
     float cov = sum * 1.0 / (cov_size - 2 * quantile);
-  //  std::cout << cov << std::endl;
-  //  float cov = static_cast<float>(sum * 1.0 / cov_size );
+ 
     return cov;
 }
 
@@ -871,37 +802,7 @@ int read_num(std::string read, std::vector<std::string> Read) {
         return -1;
 }
 
-bool list_contain_str(const std::string& str, const std::vector<std::string>& list){
-    int i;
-    for ( i = 0; i < list.size(); i++) {
-        if (list[i] == str)
-            break;
-    }
-    if (i < list.size())
-        return true;
-    else
-        return false;
-}
 
-
-size_t find_longest_read(std::vector<std::string>& list) {
-    if (list.empty()) {
-        return -1;
-    }
-    int max_langth = 0;
-    int num = -1;
-    size_t date_size = list.size();
-    for (int i = 0; i < date_size; i++) {
-        if (read_is_used(i))
-            continue;
-        std::string str = list[i];
-        if (str.length() > max_langth) {
-            num = i;
-            max_langth = str.length();
-        }
-    }
-    return num;
-}
 
 void find_read_contain_kmer(std::vector<std::string>& read_list, std::string candidate, std::vector<size_t>& candidate_reads) {
     for (size_t i = 0; i < read_list.size(); ++i) {
@@ -991,104 +892,12 @@ bool support_edge_decision(std::string str, std::vector<size_t> reads, std::vect
 
     }
     std::sort(similarity.begin(), similarity.end(), [](int a, int b) { return a > b; });
-    /*
-    for (size_t i = 0; i < 4; ++i) {
-        std::cout << similarity[i] << " ";
-    }
-    std::cout << std::endl;
-   // */
+   
     if (similarity.size() >= 4 && similarity[3] > read.length() * 0.95)
         return true;
     else
         return false;
 
-}
-
-
-void  add_reverse_branch(int p, std::vector<std::string>& read_list, Kmer_Hash kmer_hash, std::vector<Node>& node_set,bool& flag) {
-
-    std::cout << "Beginning add branch ..." << std::endl;
-    time_t beg = time(NULL);
-    std::string fileName = out_dir + "branch.fasta";
-    std::ofstream ofile(fileName);
-    std::string trunk = node_set[p].sequence;
-    
-    for (int i = 0 ; i <= trunk.length() - g_kmer_length; i++) {
-        std::string kmer = trunk.substr(i, g_kmer_length);
-        if (kmer.substr(0, 3) != "ATG") //
-            continue;
-
-        std::vector<size_t> candidate_reads;
-        find_read_contain_kmer(read_list, kmer, candidate_reads);
-        for (int j = 0; j < candidate_reads.size(); j++) {
-            std::string candidate_read = read_list[candidate_reads[j]];
-            int pos = candidate_read.find(kmer);
-            if (pos < g_kmer_length || pos > candidate_read.length() - g_kmer_length)
-                continue;
-            std::string first_kmer = candidate_read.substr(0, g_kmer_length);
-            std::string last_kmer = candidate_read.substr(candidate_read.length() - g_kmer_length);
-            int start = trunk.find(first_kmer);
-            int end = trunk.find(last_kmer);
-            if ( end == std::string::npos  || end - start < candidate_read.length() + 3)  //
-                continue;
-            int pos2 = node_set[p].sequence.find(kmer);
-            if (pos2 == std::string::npos || pos2 <= 3)
-                continue;
-            std::string r_str = candidate_read.substr(0, pos);
-            std::string f_str = candidate_read.substr(pos);
-            int len2 = (i < r_str.length()) ? i : r_str.length();
-            bool r_flag = reverse_different2(r_str, trunk.substr(i - len2, len2));
-            if (!r_flag)
-                continue;
-            int len1 = (trunk.length() - i < f_str.length()) ? trunk.length() - i : f_str.length();
-            bool f_flag = forward_similar(f_str, trunk.substr(i , len1), 2);
-            if (!f_flag)
-                continue;
-            int junction = pos - 0.5 * (g_kmer_length + 1);
-            std::string jun_kmer = candidate_read.substr(junction, g_kmer_length);
-            if (!flag)
-                jun_kmer = revcomp(jun_kmer);
-            kmer_int_type_t jun_val = kmer_to_intval(jun_kmer);
-           
-            if ( kmer_hash[jun_val] < 3)
-                continue;
-
-            if (f_flag && r_flag) {
-                std::vector<size_t> jun_reads;
-                find_read_contain_kmer(read_list, jun_kmer, jun_reads);
-                std::string ref_str =  candidate_read + trunk.substr(i + f_str.length(), 20);
-                if (!support_edge_decision(ref_str, jun_reads, read_list))
-                    continue;
-
-                // std::cout  << i << " kmer: " << kmer << " jun_kmer_num: " << kmer_hash[jun_val] << std::endl;
-                ofile << ">" << "pos:  " << i << std::endl;
-                ofile << candidate_read << std::endl;
-                // std::cout << candidate_read << std::endl;
-
-                Node node1, node2;
-                node1 = node_set[p].sequence.substr(0, pos2);
-                node_set[p].sequence = node_set[p].sequence.substr(pos2);
-                node_idx_t q1 = add_node(node1, node_set);
-                node2 = candidate_read.substr(0, pos);
-                node_idx_t q2 = add_node(node2, node_set);
-                node_set[q1].parents = node_set[p].parents;
-                node_set[p].parents.clear();
-                node_set[p].add_parent(q1);
-                node_set[p].add_parent(q2);
-
-                break;
-            }
-        }
-    }
-    Node node;
-    node = node_set[p].sequence;
-    node_idx_t q = add_node(node, node_set);
-    node_set[q].parents = node_set[p].parents;
-    node_set[p].clear();
-
-    set_child(node_set);
-    time_t end = time(NULL);
-    std::cout << "Finished add branch. get " << node_set.size() << " nodes. (elapsed time : " << (end - beg) << " s)" << std::endl;
 }
 
 
@@ -1169,12 +978,10 @@ void check_reverse_branch(int p, std::vector<std::string>& read_list, Kmer_Hash 
             kmer_int_type_t jun_val = kmer_to_intval(jun_kmer);
 
             
-            // std::cout << f_flag << std::endl; 
             
-        //    std::cout << i << " kmer: " << kmer << " jun_kmer_num: " << kmer_hash[jun_val] << " " << f_flag << std::endl;
-            if (f_flag && kmer_hash[jun_val] > 3) {  //&& l_flag1 && !l_flag2  
+            if (f_flag && kmer_hash[jun_val] > 3) {  
 
-               // std::cout << i << " ";
+              
                 std::vector<size_t> jun_reads;
                 if (!flag)
                     jun_kmer = revcomp(jun_kmer);
@@ -1183,9 +990,7 @@ void check_reverse_branch(int p, std::vector<std::string>& read_list, Kmer_Hash 
                 if (!support_edge_decision(ref_str, jun_reads, read_list))
                     continue;
 
-              //   std::cout  << i << " kmer: " << kmer << " jun_kmer_num: " << kmer_hash[jun_val] << std::endl;
-
-                // std::cout << candidate_read << std::endl;
+              
                 ofile << ">" << "pos:  " << i << std::endl;
                 ofile << candidate_read << std::endl;
 
@@ -1216,21 +1021,10 @@ void check_reverse_branch(int p, std::vector<std::string>& read_list, Kmer_Hash 
     time_t end = time(NULL);
     std::cout << "Finished add branch  (elapsed time: " << (end - beg) << " s)" << std::endl;
 
-
+   
 }
 
-void printNodes(std::vector<Node> node_set,int p, int depth = 0) {
-    
-    for (int i = 0; i < depth; ++i) {
-        std::cout << "  ";
-    }
-    std::cout << node_set[p].sequence << std::endl;
-    
-    for (int j = 0; j < node_set[p].children.size(); j++) {
-        printNodes(node_set,j, depth + 1);
-    }
-    
-}
+
 
 int find_node_contain_kmer(std::vector<Node>& node_set, std::string kmer) {
     int i;
@@ -1325,29 +1119,6 @@ int find_node_map_read(std::vector<Node>& node_set, std::string read) {
     return -1;
 }
 
-std::vector<int> findKeysWithValuesContaining(const boost::unordered_map<int, std::vector<size_t>>& node_read_hash, int value) {
-    std::vector<int> result;
-
-    for (const auto& pair : node_read_hash) {
-        const std::vector<size_t>& vec = pair.second;
-
-        for (const auto& element : vec) {
-            if (element == value) {
-                result.push_back(pair.first);
-                break;
-            }
-        }
-    }
-
-    return result;
-}
-
-bool pairIsContained(const std::pair<int, int>& pair1, const std::vector<std::pair<int, int>>& transcript_path) {
-    for (const auto& pair : transcript_path)
-        if (pair1 != pair && pair1.first >= pair.first && pair1.second <= pair.second)
-            return true;
-    return false;
-}
 
 
 void get_revcomp_paired_reads_list(std::vector<std::string>& paired_read_list) {
@@ -1417,43 +1188,10 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
             }
             vector.clear();
         }  
-        /*
-        for (auto it = read_set.begin(); it != read_set.end(); ) {
-            if (it->second < read_len-g_kmer_length-2) {
-                it = read_set.erase(it);
-            }
-            else {
-                ++it;
-            }
-        }
-        
-        
-        for (auto it = read_set.begin(); it != read_set.end(); it++) {
-            std::string read = paired_read_list[it->first];
-            if (is_similar( sequence, read)) {
-                node_read_hash[j].push_back(it->first);
-                read_to_node_hash[it->first] = j;
-            }
-        } 
-        */
+       
     }
 
-    /*
-    std::ofstream file("/home/bioinfo/limh/paper/data/SRR1942956/node_read_list.txt");
-
-    for (const auto& entry : node_read_hash) {
-        int key = entry.first;
-        const std::vector<size_t>& value = entry.second;
-        file << "Key: " << key << std::endl;
-        file << "Values:";
-        for (const auto& elem : value) {
-            file << " " << elem;
-        }
-        file << std::endl << std::endl;
-    }
-
-    file.close();
-    */
+   
 
     std::cout << "Begins calculating the abundance of each node... " << std::endl;
     std::vector<std::pair<int, int>> transcript_path;
@@ -1487,11 +1225,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
             node_cov_hash[j] = cov;
         }
     }
-    /*
-    for (auto it = node_cov_hash.begin(); it != node_cov_hash.end(); ++it) {
-        std::cout << "Key: " << it->first << ", Value: " << it->second << std::endl;
-    }
-    */
+   
     //重建转录本路径
 
     std::cout << "Start building transcript paths..." << std::endl;
@@ -1513,8 +1247,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
                 read_to_node_hash[mate_read_num] % 2 == 0 || read_to_node_hash[mate_read_num] - j >= 10 )
                 continue;
             
-          //  ofile << j <<  "  " << read_to_node_hash[mate_read_num]  << " " << read_set[i]  << " " << mate_read_num << std::endl;
-          //  ofile << paired_read_list[read_set[i]] << "    " << paired_read_list[mate_read_num] << std::endl;
+         
 
             node_hash[read_to_node_hash[mate_read_num]]++;  //配对节点的个数
         }
@@ -1528,13 +1261,13 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
             if (it->first > mate_node_hash[j])
                 mate_node_hash[j] = it->first;
      
-            ofile1 << it->first << " " << it->second  << " str.cov: " << node_cov_hash[it->first] << std::endl;  // 
+            ofile1 << it->first << " " << it->second  << " reads_support: " << node_cov_hash[it->first] << std::endl;  // 
         }
 
   //      /*
         int l = j , sum = 0;
         float cov = 0, cov_p = 0, cov_v = 0 , mw = 0;
-        while (!node_set[l].children.empty() && mate_node_hash[j] != 0) { //&& node_set[l].children[0] <= mate_node_hash[j]
+        while (!node_set[l].children.empty() && mate_node_hash[j] != 0) { 
 
             if (cov == 0) {
                 cov = node_cov_hash[node_set[l].children[0]];
@@ -1561,11 +1294,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
             l = node_set[l].children[0];
 
         }
-        /*
-        if(!node_set[l].children.empty())
-            mate_node_hash[j] = node_set[l].children[0];
-        else
-        */
+        
             mate_node_hash[j] = l;
 
 
@@ -1580,28 +1309,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
 
     }
 
-   /*
-    for (const auto& pair : transcript_path) {
-        std::cout << pair.first << " " << pair.second << std::endl;
-    }
-  //  
-    /*
-    // 去除了被包含的路径
-    std::vector<std::pair<int, int>> filtered_transcript_path;
-    for (const auto& pair1 : transcript_path) {
-        if (pairIsContained(pair1, transcript_path)) {
-            filtered_transcript_path.push_back(pair1);
-        }
-    }
-
-    for (const auto& pair : filtered_transcript_path) {
-        mate_node_hash.erase(pair.first);
-    }
-   // /*
-    for (auto it = mate_node_hash.begin(); it != mate_node_hash.end(); it++) {
-        std::cout << it->first << " " << it->second << std::endl;
-    }
-   // */
+   
 
 
 
@@ -1650,23 +1358,20 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
             }
             if (end1 != 0) {
                 transcript_list.push_back(transcript.substr(start,end1-start));
-             //   ofile2 << ">" << "transcript_" << k++ << "__" << j << std::endl;
-             //   ofile2 << transcript.substr(start, end1 - start) << std::endl;
+            
             }
             if (end2 != 0) {
                 transcript_list.push_back(transcript.substr(start, end2 - start));
-               // ofile2 << ">" << "transcript_" << k++ << "__" << j << std::endl;
-               // ofile2 << transcript.substr(start, end2 - start) << std::endl;
+              
             }
             if (end2 == 0) {
                 transcript_list.push_back(transcript);
 
-             //   ofile2 << ">" << "transcript_" << k++ << "__" << j << std::endl;
-             //   ofile2 << transcript << std::endl;
+            
             }
         }
        
-       // for (int i = transcript.length()-3 ; i >=0; i--) {
+       
         else {
             for (int i = 0; i <= transcript.length() - 3; i += 3) {
                 std::string stop_codon = transcript.substr(i, 3);
@@ -1677,8 +1382,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
                     if (transcript.length() <= 100)
                         continue;
                     transcript_list.push_back(transcript);
-                  //  ofile2 << ">" << "transcript_" << k++ << "__" << j << std::endl;
-                  //  ofile2 << transcript << std::endl;
+                 
                     break;
                 }
 
@@ -1690,46 +1394,45 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
     std::cout << "Finished find_path "  <<  transcript_list.size() << " (elapsed time: " << (end - beg) << " s)" << std::endl;
 }
 
-void get_branch_reads(std::vector<std::string>& contigs_list, Read_Hash& read_hash, std::vector<std::string>& branch_read_list,bool& flag) {
-    boost::unordered_map<std::string, size_t>::iterator it;
-    it = read_hash.begin();
-    int len = it->first.length() + 10;
-    for (; it != read_hash.end(); ++it) {
-        std::string read = it->first;
-        std::string fkmer = read.substr(0, g_kmer_length);
-        std::string lkmer = read.substr(read.length() - g_kmer_length);
-        bool map = false;
-        for (int i = 0; i < contigs_list.size(); i++) {
-            std::string contig = contigs_list[i];
-            int first = contig.find(fkmer);
-            int last = contig.find(lkmer);
-            if (first != std::string::npos && last != std::string::npos && last - first < len) {
-                map = true;
-                break;
-            }
-        }
-        if (!map) {
-            if(flag)
-                branch_read_list.push_back(read);
-            else
-                branch_read_list.push_back(revcomp(read));
-        }
-    }
-}
 
 
-void construct_graph(std::vector<std::string>& contigs_list, Kmer_Hash& kmer_hash, Read_Hash& read_hash, std::vector<std::string>& paired_read_list) {
+
+void construct_graph(std::vector<std::string>& kunitigs_list, Kmer_Hash& kmer_hash, Read_Hash& read_hash, std::vector<std::string>& paired_read_list) {
     
     std::cout << "Beginning get_transcript ..." << std::endl;
     time_t beg = time(NULL);
     bool flag = true;
-    std::sort(contigs_list.begin(), contigs_list.end(), [](std::string& str1, std::string& str2) { return str1.length() > str2.length(); });
+    std::sort(kunitigs_list.begin(), kunitigs_list.end(), [](std::string& str1, std::string& str2) { return str1.length() > str2.length(); });
     
    
-    std::string trunk = contigs_list[0];
+    std::string trunk = kunitigs_list[0];
     std::vector<std::string> read_list;
+    int second_length = 0, other_length_sum = 0;
+    int used_kmer_num = trunk.length() - g_kmer_length + 1;
+    Kmer_Hash used_kmer_hash;
 
-    if (trunk.length() >= 0.9 * g_ref_genome_len) {
+    if (kunitigs_list.size() > 1) {
+        second_length = kunitigs_list[1].length();
+
+        for (int i = 0; i < kunitigs_list.size(); ++i) {
+            
+            std::string sequence = kunitigs_list[i];
+
+            for (size_t j = 0; j <= sequence.length() - g_kmer_length; ++j) {
+                const std::string& kmer = sequence.substr(j, g_kmer_length);
+                kmer_int_type_t kmer_val = kmer_to_intval(kmer, g_kmer_length);
+                used_kmer_hash[kmer_val] += 1;
+            }
+        }
+
+        for (int j = 1; j < kunitigs_list.size(); ++j) {
+            other_length_sum += kunitigs_list[j].length();
+        }
+    }
+
+    
+
+    if (trunk.length() - g_kmer_length + 1  >  0.9 * used_kmer_hash.size() || trunk.length() > 20 * second_length  || trunk.length() > 5 * other_length_sum) {
         std::string fileName = out_dir + "node_set.fasta";
         std::ofstream outfile(fileName);
         std::string fileName2 = out_dir + "transcript.fasta";
@@ -1738,11 +1441,14 @@ void construct_graph(std::vector<std::string>& contigs_list, Kmer_Hash& kmer_has
 
         std::vector<Node> node_set;
         for (int i = 0; i < 10; i++) {
+            if (trunk.substr(trunk.length() - i - 7, 7) == "AAAAAAA")
+                break;
             if (trunk.substr(i, 5) == "TTTTT") {
                 flag = false;
                 trunk = revcomp(trunk);
                 break;
             }
+                
         }
         transcript_list.push_back(trunk);
 
@@ -1750,7 +1456,7 @@ void construct_graph(std::vector<std::string>& contigs_list, Kmer_Hash& kmer_has
         Node node(trunk);
         int p = add_node(node, node_set);
         check_reverse_branch(p, read_list, kmer_hash, node_set, flag);
-        //add_reverse_branch(p, read_list, kmer_hash, node_set);
+        
         if (!flag) 
             get_revcomp_paired_reads_list(paired_read_list);
       
@@ -1775,8 +1481,8 @@ void construct_graph(std::vector<std::string>& contigs_list, Kmer_Hash& kmer_has
         std::string fileName2 = out_dir + "transcript.fasta";
         std::ofstream ofile2(fileName2);
         
-        for (int i = 0; i < contigs_list.size(); i++) {
-            std::string trunk = contigs_list[i];
+        for (int i = 0; i < kunitigs_list.size(); i++) {
+            std::string trunk = kunitigs_list[i];
             if (trunk.length() > 0.65 * g_ref_genome_len) {
                 int start = 0, end1 = 0;
                 std::string fkmer = trunk.substr(100, g_kmer_length);
@@ -1807,17 +1513,17 @@ void construct_graph(std::vector<std::string>& contigs_list, Kmer_Hash& kmer_has
                 }
 
                 transcript_list.push_back(trunk.substr(0, end1 ));
-                ofile2 << ">" << "trunk_" << k++  << std::endl;
+                ofile2 << ">" << "transcript_" << k++  << std::endl;
                 ofile2 << trunk.substr(0, end1) << std::endl;
 
                 transcript_list.push_back(trunk);
-                ofile2 << ">" << "trunk_" << k++ << std::endl;
+                ofile2 << ">" << "transcript_" << k++ << std::endl;
                 ofile2 << trunk << std::endl;
                
             }
             else {
                 transcript_list.push_back(trunk);
-                ofile2 << ">" << "trunk_" << k++ << std::endl;
+                ofile2 << ">" << "transcript_" << k++ << std::endl;
                 ofile2 << trunk << std::endl;
             }     
         }
@@ -1830,14 +1536,28 @@ void construct_graph(std::vector<std::string>& contigs_list, Kmer_Hash& kmer_has
 }
 
 
+
+bool forward_similar(const std::string& str1, const std::string& str2) {
+    int i = 0;
+    int j = 0;
+    int len = (str1.length() < str2.length()) ? str1.length() : str2.length();
+    int mismatch = 0.98 * len;
+   
+    int distance = editDistance(str1, str2);
+    return distance <= mismatch;
+
+}
+
+
 std::vector<std::string> remove_isContained(  std::vector<std::string>& strings) {
     
     std::vector<std::string> filteredStrings;
     std::sort(strings.begin(), strings.end(), [](const std::string& str1, const std::string& str2) {return str1.length() > str2.length(); });
-    for (const std::string& str : strings) {
+    for (int i = 0; i<strings.size() ; i++) {
+        std::string str = strings[i];
         bool isContained = false;
         for (const std::string& otherStr : filteredStrings) {
-            if (str != otherStr && str <= otherStr && is_similar(otherStr,str)|| is_similar(otherStr,revcomp(str))) {
+            if (str == otherStr || is_similar(otherStr, str)|| is_similar(otherStr, revcomp(str))) {
                 isContained = true;
                 break;
             }
@@ -1851,58 +1571,30 @@ std::vector<std::string> remove_isContained(  std::vector<std::string>& strings)
     return filteredStrings;
 
 }
-/*
-void merge_extension(std::vector<std::string>& contigs_list) {
 
-    size_t i = find_longest_read(contigs_list);
-    std::string trunk = contigs_list[i];
-    int kmer_len = g_kmer_length - 1;
-    std::string first_kmer = trunk.substr(0, kmer_len);
-    std::string last_kmer = trunk.substr(trunk.length() - kmer_len);
-    for (int j = 0; j < contigs_list.size(); j++) {
-        if (j == i)
-            continue;
-        std::string extend_contig = contigs_list[j];
-        int start = extend_contig.find(first_kmer);
-        int end = extend_contig.find(last_kmer);
-        if (start != std::string::npos && end != std::string::npos) {
-            trunk = extend_contig.substr(0, start) + trunk + extend_contig.substr(end + kmer_len);
-            contigs_list[i] = trunk;
-            contigs_list.erase(contigs_list.begin() + j);
-            merge_extension(contigs_list);
+std::vector<std::string> remove_similar(std::vector<std::string>& strings) {
+
+    std::vector<std::string> filteredStrings;
+    std::sort(strings.begin(), strings.end(), [](const std::string& str1, const std::string& str2) {return str1.length() > str2.length(); });
+    for (const std::string& str : strings) {
+        bool isContained = false;
+        for (const std::string& otherStr : filteredStrings) {
+            if ( forward_similar(otherStr, str) || forward_similar(otherStr, revcomp(str))) {    //  
+                isContained = true;
+                break;
+            }
         }
+
+        if (!isContained) {
+            filteredStrings.push_back(str);
+        }
+
     }
+    return filteredStrings;
+
 }
 
-*/
 
-void merge_extension(std::vector<std::string>& contigs_list) {
-    size_t i = find_longest_read(contigs_list);
-    std::string trunk = contigs_list[i];
-    int kmer_len = g_kmer_length - 1;
-    std::string first_kmer = trunk.substr(0, kmer_len);
-    std::string last_kmer = trunk.substr(trunk.length() - kmer_len);
-    bool merged = false; 
-    for (int j = 0; j < contigs_list.size(); j++) {
-        if (j == i)
-            continue;
-
-        std::string extend_contig = contigs_list[j];
-        int start = extend_contig.find(first_kmer);
-        int end = extend_contig.find(last_kmer);
-        if (start != std::string::npos && end != std::string::npos) {
-            std::string new_trunk = extend_contig.substr(0, start) + trunk + extend_contig.substr(end + kmer_len);
-            contigs_list[i] = new_trunk;
-            contigs_list.erase(contigs_list.begin() + j);
-            merged = true; 
-            merge_extension(contigs_list);
-            break;
-        }
-    }
-    if (!merged) {
-        return;
-    }
-}
 
 int haveCommonSequence(const std::string& str1, const std::string& str2, int commonLength) {
     if (str1.length() < commonLength || str2.length() < commonLength) {
@@ -1939,82 +1631,38 @@ void head_tail_connection(std::vector<std::string>& strings) {
     }
 }
 
-void remove_revcomp(std::vector<std::string>& contigs_list) {
+void remove_revcomp(std::vector<std::string>& kunitigs_list) {
 
     std::cerr << "Beginning remove_revcomp  ..." << std::endl;
     time_t beg = time(NULL);
 
    
-    contigs_list = remove_isContained(contigs_list);
-   // std::cout << contigs_list.size() << std::endl;
-   // merge_extension(contigs_list);
+    kunitigs_list = remove_isContained(kunitigs_list);
+
+    std::cout << "kunitigs_list count after remove_isContained : " << kunitigs_list.size() << std::endl;
+    
+    if(kunitigs_list.size() > 1)
+        kunitigs_list = remove_similar(kunitigs_list);
+  
    
-   // std::cout << contigs_list.size() << std::endl;
-   
-    head_tail_connection(contigs_list);
+    head_tail_connection(kunitigs_list);
 
     time_t end = time(NULL);
     int j = 0;
-    std::string fileName = out_dir + "contigs2.fasta";
+    std::string fileName = out_dir + "kunitigs2.fasta";
     std::ofstream outfile(fileName);
-   // std::ofstream outputFile("/home/bioinfo/limh/paper/data/SRR1942956/contigs2.fasta");
-   // std::ofstream outputFile("C:/Users/lmh/Desktop/contigs2.fasta");
+   
     if (outfile.is_open()) {
-        for (const auto& pair : contigs_list) {
+        for (const auto& pair : kunitigs_list) {
             outfile << "> " << j++ << std::endl;
             outfile << pair << "\n";
         }
     }
     outfile.close();
     
-    std::cout << "contigs_list count after remove_revcomp : " << contigs_list.size() << " (elapsed time: " << (end - beg) << " s)" << std::endl;
+    std::cout << "kunitigs_list count after remove_revcomp : " << kunitigs_list.size() << " (elapsed time: " << (end - beg) << " s)" << std::endl;
 }
 
-
-
-
-
-void remove_revread(std::vector<std::string>& contigs_list, Read_Hash& read_hash, std::vector<std::string>& read_list) {
-
-    std::cerr << "Beginning remove_revread  ..." << std::endl;
-    time_t beg = time(NULL);
-    std::string trunk = contigs_list[0];
-    for (auto it = read_hash.begin(); it != read_hash.end(); ++it) {
-        std::string read = it->first;
-        if (!is_similar(trunk, revcomp(read))) {
-            read_list.push_back(read);
-        }
-    }
-   
-    time_t end = time(NULL);
-    std::cout << "Finished remove_revread : " << read_list.size() << " (elapsed time: " << (end - beg) << " s)" << std::endl;
-}
-
-void get_contigs_cov(std::vector<std::string>& contigs_list, Kmer_Hash& kmer_hash) {
-   
-    for (int i = 0; i < contigs_list.size(); i++) {
-       // size_t n = find_longest_read(contigs_list);
-        std::string trunk = contigs_list[i];
-
-        ///*
-        std::vector<size_t> trunk_cov;
-        for (int i = 0; i <= trunk.length() - g_kmer_length; i++) {
-            std::string kmer = trunk.substr(i, g_kmer_length);
-            kmer_int_type_t val = kmer_to_intval(kmer);
-            size_t cov = kmer_hash[val];
-            trunk_cov.push_back(cov);
-        }
-        std::string fileName = out_dir + "trunk_cov_" + std::to_string(i) + ".txt";
-        //std::string fileName = "/home/bioinfo/limh/paper/data/SRR1942956/transcript_cov_"  + std::to_string(t) + ".txt";
-        std::ofstream of(fileName);
-
-        for (int i = 0; i < trunk_cov.size(); i++) {
-            of << i << " : " << trunk[i] << " : " << trunk_cov[i] << std::endl;
-        }
-
-        of.close();
-    }
-}
 
 
 void Construct_splicing_graphs(std::vector<std::string>& Read) {
@@ -2027,17 +1675,13 @@ void Construct_splicing_graphs(std::vector<std::string>& Read) {
     get_kmer_hash(kmer_hash, read_hash);
     remove_erroneous(kmer_hash, min_ratio_non_error);
 
+    std::vector<std::string> kunitigs_list;
+    extend_kunitigs(kmer_hash, kunitigs_list);
 
-
-    std::vector<std::string> contigs_list;
-    extend_contigs(kmer_hash, contigs_list);
-
-    remove_revcomp(contigs_list);
-
- 
+    remove_revcomp(kunitigs_list);
     
     
-     construct_graph(contigs_list, kmer_hash, read_hash,paired_read_list);
+     construct_graph(kunitigs_list, kmer_hash, read_hash,paired_read_list);
     
 
 }
