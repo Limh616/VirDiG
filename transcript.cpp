@@ -1541,7 +1541,7 @@ bool forward_similar(const std::string& str1, const std::string& str2) {
     int i = 0;
     int j = 0;
     int len = (str1.length() < str2.length()) ? str1.length() : str2.length();
-    int mismatch = 0.98 * len;
+    int mismatch = 0.02 * len;
    
     int distance = editDistance(str1, str2);
     return distance <= mismatch;
