@@ -1,0 +1,8 @@
+Simulation dataset Link ： https://github.com/Limh616/data.git.  
+Real datasets : All real datasets were retrieved from the NCBI Sequence Read Archive (SRA) database. 					       				   (https://www.ncbi.nlm.nih.gov/)
+			   Accession code : SRR1942956, SRR1942957 and SRR1942954 
+							   SRR10357372, SRR10357373 and SRR10357374
+							   SRR12789544, SRR12789557 and SRR12789558
+
+All real data requires data preprocessing, only data in the virus is retained.
+The example in the file is processed data.
