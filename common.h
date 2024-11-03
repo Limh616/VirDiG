@@ -21,6 +21,7 @@ extern std::string out_dir;
 extern int g_reads_direction  ;
 extern int g_ref_genome_len ;
 extern float g_map_weight;
-
+extern int g_non_canonical;
+extern int g_threads;
 #endif
 

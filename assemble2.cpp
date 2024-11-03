@@ -18,21 +18,23 @@
 
 #include <boost/unordered_map.hpp>
 
-//E:\study\dev C++\paper\data\SRR027875.fasta
 
-
-std::string reads_left_file, reads_right_file;
+ std::string reads_left_file, reads_right_file;
  ///*
  int g_kmer_length = 31;
-#define map_weight		301
-bool g_help;
-std::string out_dir;
+ #define map_weight		301
+ #define non_canonical  302
+ #define ref_genome_len 303
+ bool g_help;
+ std::string out_dir;
  int g_reads_direction = 1;
  int g_ref_genome_len = 30000;
  float g_map_weight = 0.6;
+ int g_non_canonical = 0;
+ int g_threads = 6;
 // */
 
-static const char* short_options = "l:r:k:o:d:h:f";
+static const char* short_options = "l:r:k:o:d:h:t:n";
 
 static struct option long_options[] = {
     // general options
@@ -42,7 +44,9 @@ static struct option long_options[] = {
     {"kmer_length",                 required_argument,      0,      'k'},
     {"out_dir",                     required_argument,      0,      'o'},
     {"reads_direction",             required_argument,      0,      'd'},
-    {"ref_genome_len",              required_argument,      0,      'f'},
+    {"threads",                     required_argument,      0,      't'},
+    {"ref_genome_len",              required_argument,      0,      ref_genome_len},
+    {"non_canonical",               required_argument,      0,      non_canonical},
     {"map_weight",                  required_argument,      0,      map_weight},
     {"help",                        no_argument,            0,      'h'},
 
@@ -90,8 +94,14 @@ int parse_options(int argc, char* argv[]) {
         case 'd':
             g_reads_direction = atoi(optarg);
             break;
-        case 'f':
+        case ref_genome_len:
             g_ref_genome_len = atoi(optarg);
+            break;
+        case 't':
+            g_threads = atoi(optarg);
+            break;
+        case  non_canonical:
+            g_non_canonical = atoi(optarg);
             break;
         case  map_weight:
             g_map_weight = atof(optarg); 
@@ -145,8 +155,10 @@ std::string usage() {
         << "  -l <string>: left reads file name (.fasta). " << std::endl
         << "  -r <string>: right reads file name (.fasta). " << std::endl
         << "  -d <int>: only used for pair-end reads. 1: --1--> <--2-- or <--1-- --2-->  2: --1--> --2--> or <--1-- <--2--, default 1. " << std::endl
-        << "  -f <int>: approximate length of the viral reference genome, default 30000. " << std::endl
-        << "  -map_weight <float>: paired-end reads are assigned paired node weights, recommended to be in the range of 0 to 1, default 0.6. " << std::endl
+        << "  -t <int>: number of threads, default 6. " << std::endl
+        << "  --ref_genome_len <int>: approximate length of the viral reference genome, default 30000. " << std::endl
+        << "  --non_canonical <int>: whether to generate non-standard transcripts, 1 : true, 0 : false, default 0. " << std::endl
+        << "  --map_weight <float>: paired-end reads are assigned paired node weights, recommended to be in the range of 0 to 1, default 0.6. " << std::endl
         << "===============================================================================" << std::endl
         << std::endl;
 
