@@ -37,18 +37,18 @@ and outputs all assembled candidate transcripts in fasta format.
 3. Download hisat2 and sequence alignment:
 	
 	a) download hisat2.
-	   ```				
+	   				
 	   $ wget https://cloud.biohpc.swmed.edu/index.php/s/oTtGWbWjaxsQ2Ho/download						
 	   $ unzip download
-	   ```
+	   
 	b) create index file:
-	   ```	
+	   	
 	   $ hisat2-build ref_genome.fasta /index_dir/genome_index
-	   ```
+	   
 	c) sequence alignment:
-	   ```	
+	   	
 	   $ hisat2 -x index_dir/genome_index -1 SRR1942956_1.fastq -2 SRR1942956_2.fastq -S  SRR1942956.sam --no-unal
-	   ```
+	   
 4. Download samtools and Format conversion
 	
 	See [Samtools](https://github.com/samtools/samtools/) and build it
@@ -57,9 +57,9 @@ and outputs all assembled candidate transcripts in fasta format.
 	```
 
 
-================
- Installation
-================
+
+ ## Installation
+
 
 1. Building  VirDiG
 	```
