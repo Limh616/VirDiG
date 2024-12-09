@@ -154,7 +154,7 @@ std::string usage() {
         << "  Pair end reads: " << std::endl
         << "  -l <string>: left reads file name (.fasta). " << std::endl
         << "  -r <string>: right reads file name (.fasta). " << std::endl
-        << "  -d <int>: only used for pair-end reads. 1: --1--> <--2-- or <--1-- --2-->  2: --1--> --2--> or <--1-- <--2--, default 1. " << std::endl
+        << "  -d <int>: pair-end reads directions can be defined, 1: opposite directions  2: same direction. default: 1. " << std::endl
         << "  -t <int>: number of threads, default 6. " << std::endl
         << "  --ref_genome_len <int>: approximate length of the viral reference genome, default 30000. " << std::endl
         << "  --non_canonical <int>: whether to generate non-standard transcripts, 1 : true, 0 : false, default 0. " << std::endl
