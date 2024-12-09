@@ -19,19 +19,19 @@
 #include <boost/unordered_map.hpp>
 
 
- std::string reads_left_file, reads_right_file;
- ///*
- int g_kmer_length = 31;
- #define map_weight		301
- #define non_canonical  302
- #define ref_genome_len 303
- bool g_help;
- std::string out_dir;
- int g_reads_direction = 1;
- int g_ref_genome_len = 30000;
- float g_map_weight = 0.6;
- int g_non_canonical = 0;
- int g_threads = 6;
+std::string reads_left_file, reads_right_file;
+///*
+int g_kmer_length = 31;
+#define map_weight		301
+#define non_canonical  302
+#define ref_genome_len 303
+bool g_help;
+std::string out_dir;
+int g_reads_direction = 1;
+int g_ref_genome_len = 30000;
+float g_map_weight = 0.6;
+int g_non_canonical = 0;
+int g_threads = 6;
 // */
 
 static const char* short_options = "l:r:k:o:d:h:t:n";
@@ -82,7 +82,7 @@ int parse_options(int argc, char* argv[]) {
         case 'k':
             g_kmer_length = atoi(optarg);
             break;
-       case 'r':
+        case 'r':
             reads_right_file = optarg;
             break;
         case 'l':
@@ -104,7 +104,7 @@ int parse_options(int argc, char* argv[]) {
             g_non_canonical = atoi(optarg);
             break;
         case  map_weight:
-            g_map_weight = atof(optarg); 
+            g_map_weight = atof(optarg);
             break;
         case 'o':
             out_dir = optarg;
@@ -117,15 +117,15 @@ int parse_options(int argc, char* argv[]) {
 
     if (g_help) {
         std::cout << usage();
-        exit(1);
+        exit(0);
     }
 
-    if (reads_left_file == "" || reads_right_file == "" ) {
+    if (reads_left_file == "" || reads_right_file == "") {
         std::cerr << "Error : --input option needs an argument!! " << std::endl;
         std::cout << usage();
         exit(1);
     }
-    if (g_reads_direction != 1 && g_reads_direction != 2 ) {
+    if (g_reads_direction != 1 && g_reads_direction != 2) {
         std::cout << "Error: --fr can only be 1 or 2" << std::endl;
         exit(1);
     }
