@@ -64,7 +64,7 @@ and outputs all assembled candidate transcripts in fasta format.
 1. Building  VirDiG
 	```
 	$ cd VirDiG
-	$ g++ -o VirDiG assemble2.cpp load_reads2.cpp transcript.cpp utility.cpp 
+	$ g++ -o virdig assemble2.cpp load_reads2.cpp transcript.cpp utility.cpp 
 	```
 2. Usage
 	
@@ -78,7 +78,7 @@ and outputs all assembled candidate transcripts in fasta format.
 
 A typical command of VirDiG might be:
 
-    $ ./VirDiG -l forward.fq -r reverse.fq -o output
+    $ ./virdig -l forward.fq -r reverse.fq -o output
   	
 ** Options :
     	
