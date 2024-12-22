@@ -57,9 +57,15 @@ and outputs all assembled candidate transcripts in fasta format.
 	```
 
 
+## Installation
 
- ## Installation
+### 1. Install via Bioconda
+```
+conda install virdig
+```
 
+
+### 2. Compile from source
 
 1. Building  VirDiG
 	```
@@ -84,10 +90,9 @@ A typical command of VirDiG might be:
     	
 	-h                     : help information.
 	-k <int>               : length of kmer, default: 31.
-	-d <int>               : pair-end reads directions can be defined, 1: opposite directions  2: same direction. default: 1.
+	-d <int>               : pair-end reads directions can be defined, 1 indicates that the directions of reads at both ends of paired-end are inversely complementary, and 2 indicates that the directions of reads at both ends are the same. default: 1.
 	-t <int>               : number of threads, default 6.
-	
-	--ref_genome_len <int> : approximate length of the viral reference genome, default 30000.
+
     --non_canonical <int>  : whether to generate non-standard transcripts, 1 : true, 0 : false, default 0.
-    --map_weight <float>   : paired-end reads are assigned paired node weights, recommended to be in the range of 0 to 1, default: 0.6.
+    --map_weight <float>   : paired-end reads are assigned paired node weights, recommended to be in the range of 0 to 1, default: 0.7.
 
