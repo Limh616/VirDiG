@@ -229,7 +229,7 @@ void reads_hash_process_chunk(const std::vector<std::string>& reads, size_t star
         if (sequence.empty()) continue;
         local_hash[sequence]++;
     }
-   
+
     std::lock_guard<std::mutex> lock(hash_mutex);
     for (const auto& entry : local_hash) {
         read_hash[entry.first] += entry.second;
@@ -242,16 +242,16 @@ void get_read_hash(Read_Hash& read_hash, std::vector<std::string>& Read) {
     time_t beg = time(NULL);
     if (Read.empty()) return;
     size_t data_size = Read.size();
-    size_t num_threads = g_threads; 
+    size_t num_threads = g_threads;
     size_t chunk_size = data_size / num_threads;
     std::vector<std::thread> threads;
- 
+
     for (size_t i = 0; i < num_threads; ++i) {
         size_t start = i * chunk_size;
-        size_t end = (i == num_threads - 1) ? data_size : start + chunk_size; 
+        size_t end = (i == num_threads - 1) ? data_size : start + chunk_size;
         threads.emplace_back(reads_hash_process_chunk, std::cref(Read), start, end);
     }
-   
+
     for (auto& th : threads) {
         th.join();
     }
@@ -272,7 +272,7 @@ void process_kmer(const boost::unordered_map<std::string, size_t>& read_hash_chu
             local_kmer_hash[kmer_val] += entry.second;
         }
     }
-   
+
     std::lock_guard<std::mutex> lock(hash_mutex);
     for (const auto& entry : local_kmer_hash) {
         kmer_hash[entry.first] += entry.second;
@@ -286,17 +286,17 @@ void get_kmer_hash(Kmer_Hash& kmer_hash, Read_Hash& read_hash) {
     size_t num_threads = g_threads;
     std::vector<std::thread> threads;
     std::vector<boost::unordered_map<std::string, size_t>> read_hash_chunks(num_threads);
-   
+
     size_t index = 0;
     for (const auto& entry : read_hash) {
         read_hash_chunks[index % num_threads][entry.first] = entry.second;
         ++index;
     }
-  
+
     for (size_t i = 0; i < num_threads; ++i) {
         threads.emplace_back(process_kmer, std::ref(read_hash_chunks[i]));
     }
-   
+
     for (auto& th : threads) {
         th.join();
     }
@@ -937,13 +937,13 @@ int different_point(std::string str1, std::string str2) {
 }
 
 void get_paired_read_list(std::vector<std::string>& paired_reads, std::vector<std::string>& Read) {
-    
+
     std::cout << "Beginning to get paired reads..." << std::endl;
     time_t beg = time(NULL);
-    
+
     boost::unordered_map<std::string, std::string> pair_reads_hash;
     int size = Read.size();
-  
+
     std::vector<std::thread> threads;
     for (int i = 0; i < size; i++) {
         if (i < size / 2)
@@ -969,10 +969,10 @@ void get_paired_read_list(std::vector<std::string>& paired_reads, std::vector<st
 
 }
 
-bool is_ATG_pos(int pos, std::string trunk,int& ATG_pos) {
+bool is_ATG_pos(int pos, std::string trunk, int& ATG_pos) {
 
     for (int i = 0; i < 15; i++) {
-        if (trunk.substr(pos + i, 3) == "ATG" ) {
+        if (trunk.substr(pos + i, 3) == "ATG") {
             ATG_pos = pos + i;
             return true;
         }
@@ -983,7 +983,7 @@ bool is_ATG_pos(int pos, std::string trunk,int& ATG_pos) {
         }
     }
     return false;
-        
+
 }
 
 
@@ -1105,10 +1105,10 @@ void check_non_canonical_branch(int p, std::vector<std::string>& read_list, Kmer
     time_t beg = time(NULL);
 
     std::string trunk = node_set[p].sequence;
-    
+
     std::string fileName = out_dir + "branch2.fasta";
     std::ofstream ofile(fileName);
-   
+
     boost::unordered_map<int, int> jump_pos_hash;
     std::map<int, std::string> jump_reads_hash;
 
@@ -1119,12 +1119,12 @@ void check_non_canonical_branch(int p, std::vector<std::string>& read_list, Kmer
         std::string last_kmer = read.substr(read_len - g_kmer_length);
         int start = trunk.find(first_kmer);
         int end = trunk.find(last_kmer);
-        int pos = different_point(trunk.substr(start, read_len),  read);
+        int pos = different_point(trunk.substr(start, read_len), read);
         int jum_pos = end + g_kmer_length + pos - read_len;
-        
-        bool f_flag = forward_similar( read.substr(pos), trunk.substr(jum_pos,read_len-pos), 2);
+
+        bool f_flag = forward_similar(read.substr(pos), trunk.substr(jum_pos, read_len - pos), 2);
         if (!f_flag) { continue; }
-     
+
         jump_pos_hash[jum_pos]++;
         if (jump_pos_hash[jum_pos] > 5 && !is_jun_pos(jum_pos, jun_poss)) {
             jump_reads_hash[jum_pos] = read.substr(0, pos);
@@ -1135,10 +1135,10 @@ void check_non_canonical_branch(int p, std::vector<std::string>& read_list, Kmer
 
     int pre_pos = 0;
     for (auto it = jump_reads_hash.begin(); it != jump_reads_hash.end(); it++) {
-        
+
         Node node1, node2;
         node1 = node_set[p].sequence.substr(0, it->first - pre_pos);
-        node_set[p].sequence = node_set[p].sequence.substr(it->first -pre_pos);
+        node_set[p].sequence = node_set[p].sequence.substr(it->first - pre_pos);
         node_idx_t q1 = add_node(node1, node_set);
         node2 = it->second;
         node_idx_t q2 = add_node(node2, node_set);
@@ -1294,7 +1294,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
 
     std::vector<size_t> vector;
     for (int j = 1; j < node_set.size(); ++j) {
-       
+
         std::string sequence = node_set[j].sequence;
         if (sequence.length() < read_len) {
             int l = j;
@@ -1312,7 +1312,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
 
         boost::unordered_map<size_t, int>  read_set;
         for (int k = 0; k <= sequence.length() - g_kmer_length; ++k) {
-            
+
             std::string kmer = sequence.substr(k, g_kmer_length);
             vector = kmer_read_hash[kmer];
             for (int ii = 0; ii < vector.size(); ii++) {
@@ -1339,13 +1339,13 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
     for (int j = 1; j < node_set.size(); ++j) {    //计算各节点的丰度，如果是1或者偶数节点，计算连接处的丰度，非1的结束节点计算节点平均丰度
         if (node_set.size() == 2)
             continue;
-       
+
         if (j == 1 || j % 2 == 0) {
             int chil = node_set[j].children[0];
             int l = (node_set[chil].sequence.length() < g_kmer_length - 1) ? node_set[chil].sequence.length() : g_kmer_length - 1;
             int start = (0 < int(node_set[j].sequence.length() - g_kmer_length + 1)) ? node_set[j].sequence.length() - g_kmer_length + 1 : 0;
             std::string con_seq = node_set[j].sequence.substr(start) + node_set[chil].sequence.substr(0, l);
-           
+
             int cov_con_seq = get_str_coverage(con_seq, kmer_hash, flag);
             node_cov_hash[j] = cov_con_seq;
         }
@@ -1407,8 +1407,8 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
         }
 
         //      /*
-        int l = j, sum = 0 ;
-        float cov = 0, cov_p = 0, cov_v = 0, mw = 0 , C = 1 ;
+        int l = j, sum = 0;
+        float cov = 0, cov_p = 0, cov_v = 0, mw = 0, C = 1;
         if (create_non_canonical)
             C += 0.5;
         while (!node_set[l].children.empty() && mate_node_hash[j] != 0) {
@@ -1429,7 +1429,7 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
                 float cov_w = (-log2(fabs(1 - cov_v / cov_p)));
                 float score = mw + cov_w;
                 ofile1 << node_set[l].children[0] << " " << score << " " << mw << " " << cov_w << " " << cov_v / cov_p << std::endl;
-                if (score <= C )
+                if (score <= C)
                     break;
 
                 cov += node_cov_hash[node_set[l].children[0]];
@@ -1473,16 +1473,16 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
         }
 
         ofile2 << "nt_" << j << std::endl;
-        if (create_non_canonical && j != 1 ) {
-            int current_kmer_cov,sum_kmer_cov = 0;
-            float cov_p = kmer_hash[ kmer_to_intval(transcript.substr(0,g_kmer_length))];
+        if (create_non_canonical && j != 1) {
+            int current_kmer_cov, sum_kmer_cov = 0;
+            float cov_p = kmer_hash[kmer_to_intval(transcript.substr(0, g_kmer_length))];
             int i = 0;
             for (; i < transcript.length() - g_kmer_length; i++) {
                 kmer_int_type_t kmerint = kmer_to_intval(transcript.substr(i, g_kmer_length));
                 current_kmer_cov = kmer_hash[kmerint];
-                ofile2 << i+1 << " current_kmer_cov " << current_kmer_cov << " cov_p " << cov_p  << " " << fabs(1 - current_kmer_cov / cov_p) <<std::endl;
-                if ( fabs(1-current_kmer_cov/cov_p) > 0.3) {
-                    
+                ofile2 << i + 1 << " current_kmer_cov " << current_kmer_cov << " cov_p " << cov_p << " " << fabs(1 - current_kmer_cov / cov_p) << std::endl;
+                if (fabs(1 - current_kmer_cov / cov_p) > 0.3) {
+
                     break;
                 }
                 sum_kmer_cov += current_kmer_cov;
@@ -1554,8 +1554,8 @@ void find_path(std::vector<Node>& node_set, std::vector<std::string> paired_read
 }
 
 
-void find_jump_reads(std::vector<std::string>&read_list, std::string trunk, std::vector<std::string>&jump_reads, bool flag) {
-    
+void find_jump_reads(std::vector<std::string>& read_list, std::string trunk, std::vector<std::string>& jump_reads, bool flag) {
+
     std::cout << "Beginning find jump read..." << std::endl;
     time_t beg = time(NULL);
     int read_len = read_list[0].length();
@@ -1564,7 +1564,7 @@ void find_jump_reads(std::vector<std::string>&read_list, std::string trunk, std:
         std::string kmer = trunk.substr(i, g_kmer_length);
         kmer_pos_hash[kmer] = i;
     }
-   
+
     for (int i = 0; i < read_list.size(); i++) {
         std::string read = read_list[i];
         if (!flag)
@@ -1573,11 +1573,11 @@ void find_jump_reads(std::vector<std::string>&read_list, std::string trunk, std:
         std::string last_kmer = read.substr(read_len - g_kmer_length);
         auto it_first = kmer_pos_hash.find(first_kmer);
         auto it_last = kmer_pos_hash.find(last_kmer);
-        if ( it_first == kmer_pos_hash.end() || it_last == kmer_pos_hash.end())
+        if (it_first == kmer_pos_hash.end() || it_last == kmer_pos_hash.end())
             continue;
-        int first_pos = it_first->second ;
+        int first_pos = it_first->second;
         int last_pos = it_last->second;
-        if ( last_pos < first_pos || last_pos - first_pos < 3 + read_len)
+        if (last_pos < first_pos || last_pos - first_pos < 3 + read_len)
             continue;
         jump_reads.push_back(read);
     }
@@ -1587,12 +1587,12 @@ void find_jump_reads(std::vector<std::string>&read_list, std::string trunk, std:
 }
 
 void process_chunk(const Read_Hash& read_hash, int start, int end) {
-    std::vector<std::string> local_list; 
+    std::vector<std::string> local_list;
     auto it = std::next(read_hash.begin(), start);
     for (int i = start; i < end && it != read_hash.end(); ++i, ++it) {
         local_list.push_back(it->first);
     }
- 
+
     {
         std::lock_guard<std::mutex> lock(hash_mutex);
         read_list.insert(read_list.end(), local_list.begin(), local_list.end());
@@ -1605,16 +1605,16 @@ void get_reads(Read_Hash& read_hash) {
     time_t beg = time(NULL);
     int size = read_hash.size();
     int num_threads = std::thread::hardware_concurrency();
-    int chunk_size = size / num_threads; 
+    int chunk_size = size / num_threads;
     std::vector<std::thread> threads;
-  
+
     for (int i = 0; i < num_threads; i++) {
         int start = i * chunk_size;
-        int end = (i == num_threads - 1) ? size : start + chunk_size; 
+        int end = (i == num_threads - 1) ? size : start + chunk_size;
 
         threads.emplace_back(process_chunk, std::ref(read_hash), start, end);
     }
-  
+
     for (auto& thread : threads) {
         thread.join();
     }
@@ -1672,7 +1672,7 @@ void construct_graph(std::vector<std::string>& kunitigs_list, Kmer_Hash& kmer_ha
                 trunk = revcomp(trunk);
                 break;
             }
-        }  
+        }
 
         transcript_list.push_back(trunk);
         Node node(trunk);
@@ -1683,7 +1683,7 @@ void construct_graph(std::vector<std::string>& kunitigs_list, Kmer_Hash& kmer_ha
         read_list.clear();
 
         std::vector <int> jun_poss;
-        check_branch(p, jump_reads, kmer_hash, node_set, flag,jun_poss);
+        check_branch(p, jump_reads, kmer_hash, node_set, flag, jun_poss);
 
         // /*
         for (int i = 1; i < node_set.size(); i++) {
@@ -1710,17 +1710,17 @@ void construct_graph(std::vector<std::string>& kunitigs_list, Kmer_Hash& kmer_ha
             p = add_node(node, node_set);
 
             check_non_canonical_branch(p, jump_reads, kmer_hash, node_set, flag, jun_poss);
-            find_path(node_set, paired_read_list, kmer_hash, flag, transcript_list,create_non_canonical );
+            find_path(node_set, paired_read_list, kmer_hash, flag, transcript_list, create_non_canonical);
 
             for (int i = 0; i < transcript_list.size(); i++) {
                 ofile2 << ">" << "non_canonical_transcript_" << i << std::endl;
                 ofile2 << transcript_list[i] << std::endl;
             }
-        
+
         }
         ofile2.close();
-        
-        
+
+
     }
 
     else {
@@ -1728,9 +1728,11 @@ void construct_graph(std::vector<std::string>& kunitigs_list, Kmer_Hash& kmer_ha
         std::string fileName2 = out_dir + "transcript.fasta";
         std::ofstream ofile2(fileName2);
 
+        int genome_len = 0.9 * used_kmer_hash.size() + g_kmer_length;
+
         for (int i = 0; i < kunitigs_list.size(); i++) {
             std::string trunk = kunitigs_list[i];
-            if (trunk.length() > 0.65 * g_ref_genome_len) {
+            if (trunk.length() > 0.65 * genome_len) {
                 int start = 0, end1 = 0;
                 std::string fkmer = trunk.substr(100, g_kmer_length);
                 kmer_int_type_t fkmer_val = kmer_to_intval(fkmer);
@@ -1776,7 +1778,7 @@ void construct_graph(std::vector<std::string>& kunitigs_list, Kmer_Hash& kmer_ha
         }
         std::cout << "Finished get " << transcript_list.size() << " transcripts " << std::endl;
     }
-    
+
     time_t end = time(NULL);
     std::cout << "Finished ,(elapsed time: " << (end - beg) << " s)" << std::endl;
 }

@@ -24,12 +24,10 @@ std::string reads_left_file, reads_right_file;
 int g_kmer_length = 31;
 #define map_weight		301
 #define non_canonical  302
-#define ref_genome_len 303
 bool g_help;
 std::string out_dir;
 int g_reads_direction = 1;
-int g_ref_genome_len = 30000;
-float g_map_weight = 0.6;
+float g_map_weight = 0.7;
 int g_non_canonical = 0;
 int g_threads = 6;
 // */
@@ -45,7 +43,6 @@ static struct option long_options[] = {
     {"out_dir",                     required_argument,      0,      'o'},
     {"reads_direction",             required_argument,      0,      'd'},
     {"threads",                     required_argument,      0,      't'},
-    {"ref_genome_len",              required_argument,      0,      ref_genome_len},
     {"non_canonical",               required_argument,      0,      non_canonical},
     {"map_weight",                  required_argument,      0,      map_weight},
     {"help",                        no_argument,            0,      'h'},
@@ -93,9 +90,6 @@ int parse_options(int argc, char* argv[]) {
             break;
         case 'd':
             g_reads_direction = atoi(optarg);
-            break;
-        case ref_genome_len:
-            g_ref_genome_len = atoi(optarg);
             break;
         case 't':
             g_threads = atoi(optarg);
@@ -156,9 +150,8 @@ std::string usage() {
         << "  -r <string>: right reads file name (.fasta). " << std::endl
         << "  -d <int>: pair-end reads directions can be defined, 1: opposite directions  2: same direction. default: 1. " << std::endl
         << "  -t <int>: number of threads, default 6. " << std::endl
-        << "  --ref_genome_len <int>: approximate length of the viral reference genome, default 30000. " << std::endl
         << "  --non_canonical <int>: whether to generate non-standard transcripts, 1 : true, 0 : false, default 0. " << std::endl
-        << "  --map_weight <float>: paired-end reads are assigned paired node weights, recommended to be in the range of 0 to 1, default 0.6. " << std::endl
+        << "  --map_weight <float>: paired-end reads are assigned paired node weights, recommended to be in the range of 0 to 1, default 0.7. " << std::endl
         << "===============================================================================" << std::endl
         << std::endl;
 
