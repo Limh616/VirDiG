@@ -27,6 +27,7 @@ int g_kmer_length = 31;
 bool g_help;
 std::string out_dir;
 int g_reads_direction = 1;
+int g_ref_genome_len = 30000;
 float g_map_weight = 0.7;
 int g_non_canonical = 0;
 int g_threads = 6;
